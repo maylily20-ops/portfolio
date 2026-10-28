@@ -753,6 +753,88 @@
       font-weight: 700;
     }
 
+    /* 사이버 동영상 모달 팝업 */
+    .video-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(8, 11, 16, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .video-modal-backdrop.open {
+      display: flex;
+    }
+
+    .video-modal-box {
+      width: 100%;
+      max-width: 820px;
+      background: rgba(15, 20, 28, 0.95);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .video-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(8, 11, 16, 0.6);
+    }
+
+    .video-modal-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+    }
+
+    .video-modal-close {
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 8px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .video-modal-close:hover {
+      background: var(--accent-cyan);
+      color: #080B10;
+      box-shadow: var(--neon-glow);
+    }
+
+    .video-modal-body {
+      padding: 16px;
+      background: #05070A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .video-modal-body video {
+      width: 100%;
+      max-height: 75vh;
+      border-radius: 8px;
+      background: #000;
+      outline: none;
+    }
+
     /* 반응형 브레이크포인트 */
     @media (min-width: 640px) {
       .metrics-grid {
@@ -902,7 +984,7 @@
                 <li>CapCut으로 같은 길이 · 같은 리듬으로</li>
               </ul>
               <div class="featured-footer">
-                <span class="status-pending">준비 중</span>
+                <button type="button" class="btn btn-primary" onclick="동영상열기('images/ad.mp4', '15초 광고 따라 만들기')">보기</button>
               </div>
             </div>
           </article>
@@ -986,6 +1068,19 @@
     </div>
   </footer>
 
+  <!-- 동영상 재생 모달 -->
+  <div class="video-modal-backdrop" id="video-modal" role="dialog" aria-modal="true" aria-labelledby="video-modal-title">
+    <div class="video-modal-box">
+      <div class="video-modal-header">
+        <span class="video-modal-title" id="video-modal-title"></span>
+        <button type="button" class="video-modal-close" onclick="동영상닫기()">닫기 ✕</button>
+      </div>
+      <div class="video-modal-body">
+        <video id="modal-video" controls playsinline></video>
+      </div>
+    </div>
+  </div>
+
   <script>
     // 새 카드는 이 목록 맨 아래에 한 줄씩 추가
     const 작품목록 = [
@@ -997,7 +1092,7 @@
       { 분야: "이미지", 일차: "8일차", 제목: "새벽 걷기 모임 포스터", 한줄: "날짜 · 장소를 고쳐 가며 완성한 모임 포스터", 도구: "Gemini", 그림: "event_poster.jpg", 링크: "[확인 필요]" },
       { 분야: "이미지", 일차: "8일차", 제목: "아침 인사 · 생일 카드", 한줄: "단톡방에 바로 쓰는 생활 이미지", 도구: "Gemini", 그림: "greeting.jpg", 링크: "[확인 필요]" },
       { 분야: "이미지", 일차: "8일차", 제목: "나만의 캐릭터 시트", 한줄: "같은 얼굴로 여섯 가지 동작", 도구: "Gemini", 그림: "character.jpg", 링크: "[확인 필요]" },
-      { 분야: "영상", 일차: "9 · 10일차", 제목: "30초 쇼츠 — 나만의 캐릭터 다이어트 쇼츠", 한줄: "기획부터 씬 이미지 · 영상 · 자막까지", 도구: "Gemini · Flow · Vrew · CapCut", 그림: "shorts.jpg", 링크: "[확인 필요]" },
+      { 분야: "영상", 일차: "9 · 10일차", 제목: "30초 쇼츠 — 나만의 캐릭터 다이어트 쇼츠", 한줄: "기획부터 씬 이미지 · 영상 · 자막까지", 도구: "Gemini · Flow · Vrew · CapCut", 그림: "shorts.jpg", 링크: "images/shorts.mp4" },
       { 분야: "웹 · 자동화", 일차: "14 · 15일차", 제목: "향수 공방 홈페이지", 한줄: "요청서로 만들고 내 도메인으로 공개", 도구: "Antigravity · GitHub · Vercel", 그림: "web.jpg", 링크: "https://ttok-ai.kr" },
       { 분야: "웹 · 자동화", 일차: "18일차", 제목: "앱 만들기", 한줄: "내 휴대폰에 사장님 비서", 도구: "Apps Script 웹 앱 · Antigravity", 그림: "ledger.jpg", 링크: "[확인 필요]" }
     ];
@@ -1009,6 +1104,37 @@
       "마케팅": { badgeClass: "badge-mkt", color: "#10B981" },
       "웹 · 자동화": { badgeClass: "badge-web", color: "#F59E0B" }
     };
+
+    function 동영상열기(경로, 제목) {
+      const 모달 = document.getElementById("video-modal");
+      const 비디오 = document.getElementById("modal-video");
+      const 타이틀 = document.getElementById("video-modal-title");
+      타이틀.textContent = 제목;
+      비디오.src = 경로;
+      모달.classList.add("open");
+      비디오.play().catch(() => {});
+    }
+
+    function 동영상닫기() {
+      const 모달 = document.getElementById("video-modal");
+      const 비디오 = document.getElementById("modal-video");
+      비디오.pause();
+      비디오.removeAttribute("src");
+      비디오.load();
+      모달.classList.remove("open");
+    }
+
+    document.getElementById("video-modal").addEventListener("click", (e) => {
+      if (e.target.id === "video-modal") {
+        동영상닫기();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        동영상닫기();
+      }
+    });
 
     function 도구추출(목록) {
       const 도구집합 = new Set();
@@ -1076,9 +1202,12 @@
              </div>`;
 
         const 링크확인필요 = !항목.링크 || 항목.링크 === "[확인 필요]" || 항목.링크 === "[확인필요]";
+        const 동영상여부 = !링크확인필요 && /\.mp4$/i.test(항목.링크);
         const 액션HTML = 링크확인필요
           ? `<span class="status-pending">준비 중</span>`
-          : `<a href="${항목.링크}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">보기</a>`;
+          : 동영상여부
+            ? `<button type="button" class="btn btn-primary" onclick="동영상열기('${항목.링크}', '${항목.제목}')">보기</button>`
+            : `<a href="${항목.링크}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">보기</a>`;
 
         return `
           <article class="glass-card project-card">
